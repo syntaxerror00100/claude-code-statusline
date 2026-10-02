@@ -1,0 +1,4 @@
+# bash fails on CRLF ("$'\r': command not found"), so keep shell scripts LF everywhere
+*.sh  text eol=lf
+*.ps1 text eol=crlf
+*.md  text
