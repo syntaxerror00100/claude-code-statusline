@@ -2,10 +2,7 @@
 
 A two-line status line for [Claude Code](https://code.claude.com/docs/en/statusline), set up for Windows with Git Bash.
 
-```
-◆ Opus 5.5 ·high │ █░░░░░░░░░ 12% 120k/1M │ $1.50 │ 14m32s │ 5h:23% (2h13m) 7d:41% (3d4h)
-⎇main* │ +120/-34 │ my-project
-```
+![Status line below the Claude Code prompt: model and effort, context bar at 12% with 120k/1M tokens, $1.50 cost, 14m32s elapsed, 5h usage 23% resetting in 2h13m, 7d usage 41% resetting in 3d4h; second line shows branch main with changes, +120/-34 lines, folder my-project](docs/statusline.svg)
 
 Based on [kcchien/claude-code-statusline](https://github.com/kcchien/claude-code-statusline). See [Changes from upstream](#changes-from-upstream) for what this fork adds.
 
@@ -23,6 +20,10 @@ Based on [kcchien/claude-code-statusline](https://github.com/kcchien/claude-code
 | Rate limits + time to reset | `5h:23% (2h13m) 7d:41% (3d4h)` | Turns red at 80%. Shown only when you log in with a claude.ai Pro/Max account. |
 
 **Line 2:** git branch (with `*` when there are uncommitted changes), lines added/removed this session, current folder, and a worktree/agent tag when one is active.
+
+Near the limits, the warning colours take over. Here the context is at 92% (red, with `⚠`), the cost is over $10, and the 5h window is at 86%, resetting in 38 minutes:
+
+![Status line near the limits: context bar at 92% in red with a warning sign, $12.40 cost in red, 5h usage 86% in red resetting in 38m](docs/statusline-limits.svg)
 
 ## Requirements
 

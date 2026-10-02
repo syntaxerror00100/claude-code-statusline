@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="822" height="114" viewBox="0 0 822 114" role="img" aria-label="Claude Code status line">
+<rect x="0.5" y="0.5" width="821" height="113" rx="10" fill="#1a1b21" stroke="#33343d"/>
+<path d="M0.5 34V10.5a10 10 0 0 1 10-10h801a10 10 0 0 1 10 10V34Z" fill="#25262e"/>
+<line x1="0.5" y1="34" x2="821.5" y2="34" stroke="#33343d"/>
+<circle cx="20" cy="17" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="17" r="6" fill="#febc2e"/>
+<circle cx="60" cy="17" r="6" fill="#28c840"/>
+<text x="411" y="21" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="12" fill="#8b8d98">Claude Code</text>
+<g font-family="'Cascadia Mono','SF Mono',Menlo,Consolas,'DejaVu Sans Mono','Liberation Mono',monospace" font-size="14" style="white-space:pre">
+<text x="20.0" y="69" fill="rgb(114,102,234)">◆</text>
+<text x="36.8" y="69" fill="#56b6c2" textLength="33.6">Opus</text>
+<text x="78.8" y="69" fill="#56b6c2" textLength="25.2">5.5</text>
+<text x="112.4" y="69" fill="#c678dd" textLength="50.4">·xhigh</text>
+<text x="171.2" y="69" fill="#dcdfe4">│</text>
+<rect x="188.0" y="56" width="8.4" height="17" fill="rgb(46,204,113)" opacity="1"/>
+<rect x="196.4" y="56" width="8.4" height="17" fill="rgb(116,195,89)" opacity="1"/>
+<rect x="204.8" y="56" width="8.4" height="17" fill="rgb(186,186,64)" opacity="1"/>
+<rect x="213.2" y="56" width="8.4" height="17" fill="rgb(241,196,15)" opacity="1"/>
+<rect x="221.6" y="56" width="8.4" height="17" fill="rgb(239,161,24)" opacity="1"/>
+<rect x="230.0" y="56" width="8.4" height="17" fill="rgb(236,126,34)" opacity="1"/>
+<rect x="238.4" y="56" width="8.4" height="17" fill="rgb(233,101,44)" opacity="1"/>
+<rect x="246.8" y="56" width="8.4" height="17" fill="rgb(231,76,60)" opacity="1"/>
+<rect x="255.2" y="56" width="8.4" height="17" fill="rgb(211,66,50)" opacity="1"/>
+<rect x="263.6" y="56" width="8.4" height="17" fill="rgb(60,60,60)" opacity="0.55"/>
+<text x="280.4" y="69" fill="#e06c75" textLength="25.2">92%</text>
+<text x="314.0" y="69" fill="#e06c75">⚠</text>
+<text x="330.8" y="69" fill="#7f848e" textLength="75.6">184k/200k</text>
+<text x="414.8" y="69" fill="#dcdfe4">│</text>
+<text x="431.6" y="69" fill="#e06c75" textLength="50.4">$12.40</text>
+<text x="490.4" y="69" fill="#dcdfe4">│</text>
+<text x="507.2" y="69" fill="#7f848e" textLength="50.4">95m12s</text>
+<text x="566.0" y="69" fill="#dcdfe4">│</text>
+<text x="582.8" y="69" fill="#e06c75" textLength="50.4">5h:86%</text>
+<text x="641.6" y="69" fill="#e06c75" textLength="42.0">(38m)</text>
+<text x="692.0" y="69" fill="#7f848e" textLength="50.4">7d:64%</text>
+<text x="750.8" y="69" fill="#7f848e" textLength="50.4">(1d6h)</text>
+<text x="20.0" y="91" fill="#7f848e" textLength="50.4">⎇main*</text>
+<text x="78.8" y="91" fill="#dcdfe4">│</text>
+<text x="95.6" y="91" fill="#98c379" textLength="33.6">+842</text>
+<text x="129.2" y="91" fill="#dcdfe4">/</text>
+<text x="137.6" y="91" fill="#e06c75" textLength="33.6">-317</text>
+<text x="179.6" y="91" fill="#dcdfe4">│</text>
+<text x="196.4" y="91" fill="rgb(143,184,255)" textLength="84.0">my-project</text>
+</g></svg>
