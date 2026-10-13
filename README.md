@@ -113,7 +113,7 @@ Remove the `statusLine` block from `%USERPROFILE%\.claude\settings.json`, or res
 ## Changes from upstream
 
 - **Windows support:** runs under Git Bash and finds `jq.exe` in `~/.claude/bin`. It strips the CRLF that jq outputs on Windows.
-- **Fixed Windows paths:** the upstream `printf '%b'` turned the `\r` in `C:\Users\robin` into a carriage return. Colours are now real escape bytes printed with `%s`. The folder segment also splits on `\`, so it shows the folder name and not the full `C:\...` path.
+- **Fixed Windows paths:** the upstream `printf '%b'` turned the `\r` in `C:\repos` into a carriage return. Colours are now real escape bytes printed with `%s`. The folder segment also splits on `\`, so it shows the folder name and not the full `C:\...` path.
 - **Reset countdown:** shows the time left before the 5h and 7d limits reset.
 - **Pace marker:** `▲` when you use a rate limit faster than its window passes.
 - **No session cost:** removed the `$` segment. For Pro/Max it is an API-equivalent price, not what you pay.
