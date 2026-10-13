@@ -88,7 +88,7 @@ echo "Updated $settings:"
 now="$(date +%s)"
 sample="{\"model\":{\"display_name\":\"Opus\"},\"effort\":{\"level\":\"high\"},\
 \"context_window\":{\"used_percentage\":42,\"context_window_size\":200000,\"total_input_tokens\":84000},\
-\"cost\":{\"total_cost_usd\":1.23,\"total_duration_ms\":65000},\
+\"cost\":{\"total_duration_ms\":65000},\
 \"rate_limits\":{\"five_hour\":{\"used_percentage\":23,\"resets_at\":$((now + 7980))},\
 \"seven_day\":{\"used_percentage\":41,\"resets_at\":$((now + 273600))}},\
 \"workspace\":{\"current_dir\":\"$(cygpath -m "$PWD")\"}}"

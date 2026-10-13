@@ -2,7 +2,7 @@
 # ~/.claude/statusline.sh — Claude Code session status line (aesthetic edition)
 #
 # 三行輸出：
-#   第一行：◆ 模型 │ 漸層進度條 百分比 │ 費用 │ 時間 │ 速率限制
+#   第一行：◆ 模型 │ 漸層進度條 百分比 │ 時間 │ 速率限制
 #   第二行：⎇分支* │ +增/-減 │ 目錄
 #   第三行：❯ 提示符（顏色跟上下文用量連動）
 #
@@ -65,8 +65,8 @@ if [[ "$USE_ASCII" == "1" ]]; then
   S_WARN="!"
   S_PROMPT=">"
   S_TIME=""
-  S_COST=""
   S_EFFORT="E:"
+  S_PACE="^"
   SEP=" | "
 elif [[ "$USE_NERDFONT" == "1" ]]; then
   S_BRAND="◆"
@@ -74,8 +74,8 @@ elif [[ "$USE_NERDFONT" == "1" ]]; then
   S_WARN=" 󰀦"
   S_PROMPT="❯"
   S_TIME="󰔟 "
-  S_COST=" "
   S_EFFORT=" "
+  S_PACE="▲"
   if [[ "$USE_POWERLINE" == "1" ]]; then
     SEP="  "
   else
@@ -87,8 +87,8 @@ else
   S_WARN=" ⚠"
   S_PROMPT="❯"
   S_TIME=""
-  S_COST=""
   S_EFFORT="·"
+  S_PACE="▲"
   if [[ "$USE_POWERLINE" == "1" ]]; then
     SEP="  "
   else
@@ -116,8 +116,7 @@ input=$(cat)
 parsed=$(echo "$input" | jq -r '
   (.model.display_name // ""),
   (.context_window.used_percentage // 0 | tostring),
-  (.cost.total_cost_usd // 0 | tostring),
-  (.workspace.current_dir // "." | split("/") | last),
+  (.workspace.current_dir // "." | (sub(".*[/\\\\]"; "") | select(. != "")) // .),
   (.worktree.branch // ""),
   (.rate_limits.five_hour.used_percentage // -1 | tostring),
   (.rate_limits.seven_day.used_percentage // -1 | tostring),
@@ -138,7 +137,6 @@ parsed=$(echo "$input" | jq -r '
 {
   IFS= read -r model_name
   IFS= read -r ctx_pct
-  IFS= read -r cost
   IFS= read -r dir
   IFS= read -r branch
   IFS= read -r rate5h
@@ -281,20 +279,6 @@ if (( used_tokens_int > 0 )); then
 fi
 
 # ═══════════════════════════════════════════════════════════════
-# 費用
-# ═══════════════════════════════════════════════════════════════
-
-cost_val="${cost:-0}"
-cost_fmt=$(printf '%.2f' "$cost_val" 2>/dev/null || echo "0.00")
-cost_int=${cost_val%.*}
-cost_int=${cost_int:-0}
-
-if (( cost_int >= 10 )); then cost_color="$RED"
-elif (( cost_int >= 5 )); then cost_color="$YELLOW"
-elif [[ "$cost_fmt" == "0.00" ]]; then cost_color="$GRAY"
-else cost_color="$YELLOW"; fi
-
-# ═══════════════════════════════════════════════════════════════
 # 經過時間（零值智慧隱藏）
 # ═══════════════════════════════════════════════════════════════
 
@@ -302,10 +286,15 @@ dur_ms=${duration_ms:-0}
 dur_section=""
 if (( dur_ms > 0 )); then
   dur_sec=$((dur_ms / 1000))
-  dur_min=$((dur_sec / 60))
+  dur_h=$((dur_sec / 3600))
+  dur_min=$((dur_sec % 3600 / 60))
   dur_s=$((dur_sec % 60))
+  # past an hour: "3h05m" (seconds no longer matter)
+  if (( dur_h > 0 )); then
+    printf -v dur_txt '%dh%02dm' "$dur_h" "$dur_min"
+    dur_section="${SEP}${GRAY}${S_TIME}${dur_txt}${RST}"
   # 格式化後仍為 0m0s 就不顯示（session 啟動初期 dur_ms 可能是幾百毫秒）
-  if (( dur_min > 0 || dur_s > 0 )); then
+  elif (( dur_min > 0 || dur_s > 0 )); then
     dur_section="${SEP}${GRAY}${S_TIME}${dur_min}m${dur_s}s${RST}"
   fi
 fi
@@ -314,44 +303,42 @@ fi
 # Git 分支與髒標記（帶快取）
 # ═══════════════════════════════════════════════════════════════
 
-GIT_CACHE="/tmp/claude-statusline-git-cache"
+# One cache file per folder, so Claude Code windows open in different repos
+# don't show each other's branch. Lines: written-at epoch, folder, branch, dirty.
 GIT_CACHE_MAX_AGE=5
+now_epoch=${EPOCHSECONDS:-$(date +%s)}
 
 git_branch="${branch:-}"
 dirty=""
 
-git_cache_is_stale() {
-  [[ ! -f "$GIT_CACHE" ]] && return 0
-  local cache_age=$(( $(date +%s) - $(stat -c %Y "$GIT_CACHE" 2>/dev/null || stat -f %m "$GIT_CACHE" 2>/dev/null || echo 0) ))
-  (( cache_age > GIT_CACHE_MAX_AGE ))
-}
-
 if [[ -n "${cwd_full:-}" && -d "${cwd_full:-}" ]]; then
-  if git_cache_is_stale; then
-    if git -C "$cwd_full" rev-parse --git-dir &>/dev/null; then
-      cached_branch="${git_branch}"
-      if [[ -z "$cached_branch" ]]; then
-        cached_branch=$(git -C "$cwd_full" -c core.useBuiltinFSMonitor=false branch --show-current 2>/dev/null) || true
-        if [[ -z "$cached_branch" ]]; then
-          cached_branch=$(git -C "$cwd_full" rev-parse --short HEAD 2>/dev/null) || true
-        fi
-      fi
-      cached_dirty=""
-      if ! git -C "$cwd_full" -c core.useBuiltinFSMonitor=false diff --quiet 2>/dev/null || \
-         ! git -C "$cwd_full" -c core.useBuiltinFSMonitor=false diff --cached --quiet 2>/dev/null; then
-        cached_dirty="*"
-      fi
-      echo "${cached_branch}|${cached_dirty}" > "$GIT_CACHE"
-    else
-      echo "|" > "$GIT_CACHE"
-    fi
+  git_cache="/tmp/claude-statusline-git-${cwd_full//[^A-Za-z0-9._-]/_}"
+  cache_ts="" cache_dir="" cached_br="" cached_dt=""
+  if [[ -f "$git_cache" ]]; then
+    { IFS= read -r cache_ts; IFS= read -r cache_dir; IFS= read -r cached_br; IFS= read -r cached_dt; } < "$git_cache" || true
   fi
 
-  if [[ -f "$GIT_CACHE" ]]; then
-    IFS='|' read -r cached_br cached_dt < "$GIT_CACHE"
-    if [[ -z "$git_branch" ]]; then git_branch="${cached_br}"; fi
-    dirty="${cached_dt}"
+  # the folder check catches two paths that map to the same file name
+  if [[ "$cache_dir" != "$cwd_full" || ! "$cache_ts" =~ ^[0-9]+$ ]] || (( now_epoch - cache_ts > GIT_CACHE_MAX_AGE )); then
+    cached_br="" cached_dt=""
+    # one call gives the branch, the HEAD sha and the dirty state (untracked files count)
+    if git_out=$(git -C "$cwd_full" --no-optional-locks -c core.useBuiltinFSMonitor=false status --porcelain=v2 --branch 2>/dev/null); then
+      head="" oid=""
+      while IFS= read -r line; do
+        case "$line" in
+          "# branch.oid "*)  oid=${line#"# branch.oid "} ;;
+          "# branch.head "*) head=${line#"# branch.head "} ;;
+          "#"*) ;;
+          ?*) cached_dt="*"; break ;;
+        esac
+      done <<< "$git_out"
+      if [[ "$head" == "(detached)" ]]; then cached_br=${oid:0:7}; else cached_br=$head; fi
+    fi
+    printf '%s\n%s\n%s\n%s\n' "$now_epoch" "$cwd_full" "$cached_br" "$cached_dt" 2>/dev/null > "$git_cache" || true
   fi
+
+  if [[ -z "$git_branch" ]]; then git_branch="$cached_br"; fi
+  dirty="$cached_dt"
 fi
 
 # ═══════════════════════════════════════════════════════════════
@@ -374,32 +361,42 @@ rate5h_int=${rate5h%.*}; rate5h_int=${rate5h_int:-0}
 rate7d_int=${rate7d%.*}; rate7d_int=${rate7d_int:-0}
 reset5h_int=${reset5h%.*}; reset5h_int=${reset5h_int:-0}
 reset7d_int=${reset7d%.*}; reset7d_int=${reset7d_int:-0}
-now_epoch=${EPOCHSECONDS:-$(date +%s)}
 
-# time left until a window resets: " (3d4h)" / " (2h05m)" / " (45m)" / " (<1m)"
-# empty when resets_at is missing or already passed
-fmt_reset_left() {
-  local left=$(( $1 - now_epoch ))
-  if (( $1 <= 0 || left <= 0 )); then return 0; fi
-  local d=$(( left / 86400 )) h=$(( left % 86400 / 3600 )) m=$(( left % 3600 / 60 ))
-  if (( d > 0 )); then printf ' (%dd%dh)' "$d" "$h"
-  elif (( h > 0 )); then printf ' (%dh%02dm)' "$h" "$m"
-  elif (( m > 0 )); then printf ' (%dm)' "$m"
-  else printf ' (<1m)'; fi
+# time left until a window resets, into REPLY: "3d4h" / "2h05m" / "45m" / "<1m"
+fmt_left() {
+  local d=$(( $1 / 86400 )) h=$(( $1 % 86400 / 3600 )) m=$(( $1 % 3600 / 60 ))
+  if (( d > 0 )); then printf -v REPLY '%dd%dh' "$d" "$h"
+  elif (( h > 0 )); then printf -v REPLY '%dh%02dm' "$h" "$m"
+  elif (( m > 0 )); then REPLY="${m}m"
+  else REPLY="<1m"; fi
+}
+
+# Appends one window to rate_parts, e.g. "5h:23% (2h13m)". Red from 80%.
+# Pace marker: more of the limit is used than of the window has passed, so
+# at this rate the limit runs out before the reset (yellow below 80%). Not
+# judged in the first 10% of a window, where one big request skews the rate.
+add_rate() {
+  local label=$1 used=$2 resets_at=$3 window=$4
+  local color="$GRAY" pace="" left_txt="" left elapsed
+  if (( used < 0 )); then return 0; fi
+  left=$(( resets_at - now_epoch ))
+  if (( resets_at > 0 && left > 0 )); then
+    fmt_left "$left"
+    left_txt=" ($REPLY)"
+    elapsed=$(( window - left ))
+    if (( elapsed * 10 >= window && used * window > elapsed * 100 )); then
+      pace="$S_PACE"
+      color="$YELLOW"
+    fi
+  fi
+  if (( used >= 80 )); then color="$RED"; fi
+  if [[ -n "$rate_parts" ]]; then rate_parts+=" "; fi
+  rate_parts+="${color}${label}:${used}%${pace}${left_txt}${RST}"
 }
 
 rate_parts=""
-if (( rate5h_int >= 0 )); then
-  left5h=$(fmt_reset_left "$reset5h_int")
-  if (( rate5h_int >= 80 )); then rate_parts+="${RED}5h:${rate5h_int}%${left5h}${RST}"
-  else rate_parts+="${GRAY}5h:${rate5h_int}%${left5h}${RST}"; fi
-fi
-if (( rate7d_int >= 0 )); then
-  if [[ -n "$rate_parts" ]]; then rate_parts+=" "; fi
-  left7d=$(fmt_reset_left "$reset7d_int")
-  if (( rate7d_int >= 80 )); then rate_parts+="${RED}7d:${rate7d_int}%${left7d}${RST}"
-  else rate_parts+="${GRAY}7d:${rate7d_int}%${left7d}${RST}"; fi
-fi
+add_rate 5h "$rate5h_int" "$reset5h_int" $(( 5 * 3600 ))
+add_rate 7d "$rate7d_int" "$reset7d_int" $(( 7 * 86400 ))
 if [[ -n "$rate_parts" ]]; then
   rate_section="${SEP}${rate_parts}"
 fi
@@ -418,7 +415,6 @@ else prompt_color="$GREEN"; fi
 
 line1="${PURPLE}${S_BRAND}${RST} ${CYAN}${model}${RST}${effort_section}"
 line1+="${SEP}${bar} ${pct_color}${pct_int}%${RST}${ctx_warn}${ctx_label}${tok_label}"
-line1+="${SEP}${cost_color}${S_COST}\$${cost_fmt}${RST}"
 line1+="${dur_section}"
 line1+="${rate_section}"
 
