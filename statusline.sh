@@ -271,10 +271,10 @@ tok_label=""
 if (( used_tokens_int > 0 )); then
   if (( ctx_size_int > 0 )); then
     # 視窗大小已知：顯示 已用/總量，並取代原本單獨的大小標籤
-    tok_label=" ${GRAY}$(fmt_tokens "$used_tokens_int")/$(fmt_tokens "$ctx_size_int")${RST}"
+    tok_label=" ${pct_color}$(fmt_tokens "$used_tokens_int")/$(fmt_tokens "$ctx_size_int")${RST}"
     ctx_label=""
   else
-    tok_label=" ${GRAY}$(fmt_tokens "$used_tokens_int")${RST}"
+    tok_label=" ${pct_color}$(fmt_tokens "$used_tokens_int")${RST}"
   fi
 fi
 

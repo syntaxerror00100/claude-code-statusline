@@ -24,7 +24,7 @@
 <rect x="263.6" y="56" width="8.4" height="17" fill="rgb(60,60,60)" opacity="0.55"/>
 <text x="280.4" y="69" fill="#e06c75" textLength="25.2">92%</text>
 <text x="314.0" y="69" fill="#e06c75">⚠</text>
-<text x="330.8" y="69" fill="#7f848e" textLength="75.6">184k/200k</text>
+<text x="330.8" y="69" fill="#e06c75" textLength="75.6">184k/200k</text>
 <text x="414.8" y="69" fill="#dcdfe4">│</text>
 <text x="431.6" y="69" fill="#7f848e" textLength="42.0">1h35m</text>
 <text x="482.0" y="69" fill="#dcdfe4">│</text>

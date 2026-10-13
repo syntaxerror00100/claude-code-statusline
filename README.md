@@ -14,7 +14,7 @@ Based on [kcchien/claude-code-statusline](https://github.com/kcchien/claude-code
 |---|---|---|
 | Model + effort | `◆ Opus 5.5 ·high` | Effort colour: low grey, medium green, high yellow, xhigh magenta, max red. Hidden when the model has no effort setting. |
 | Context bar | `█░░░░░░░░░ 12%` | Green → yellow → red gradient. The percentage turns yellow at 70%, and red with `⚠` at 90%. |
-| Tokens used / window | `120k/1M` | The same count that the percentage uses |
+| Tokens used / window | `120k/1M` | The same count and colour as the percentage |
 | Elapsed time | `14m32s` | Hidden at 0. Hours and minutes after the first hour (`1h35m`). |
 | Rate limits + time to reset | `5h:23% (2h13m) 7d:41% (3d4h)` | Turns red at 80%. `▲` (yellow) is the pace marker, see below. Shown only when you log in with a claude.ai Pro/Max account. |
 

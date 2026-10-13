@@ -28,7 +28,7 @@
 <rect x="246.8" y="102" width="8.4" height="17" fill="rgb(60,60,60)" opacity="0.55"/>
 <rect x="255.2" y="102" width="8.4" height="17" fill="rgb(60,60,60)" opacity="0.55"/>
 <text x="272.0" y="115" fill="#98c379" textLength="25.2">12%</text>
-<text x="305.6" y="115" fill="#7f848e" textLength="58.8">120k/1M</text>
+<text x="305.6" y="115" fill="#98c379" textLength="58.8">120k/1M</text>
 <text x="372.8" y="115" fill="#dcdfe4">│</text>
 <text x="389.6" y="115" fill="#7f848e" textLength="50.4">14m32s</text>
 <text x="448.4" y="115" fill="#dcdfe4">│</text>
