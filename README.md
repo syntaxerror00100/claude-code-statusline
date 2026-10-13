@@ -117,7 +117,7 @@ Remove the `statusLine` block from `%USERPROFILE%\.claude\settings.json`, or res
 - **Reset countdown:** shows the time left before the 5h and 7d limits reset.
 - **Pace marker:** `▲` when you use a rate limit faster than its window passes.
 - **No session cost:** removed the `$` segment. For Pro/Max it is an API-equivalent price, not what you pay.
-- **Git status:** one cache file per folder, so windows open in different repos no longer show each other's branch. New (untracked) files now count as changes for the `*`.
+- **Git status:** one cache file per folder, in `~/.cache/claude-statusline` instead of a shared `/tmp`, so windows open in different repos no longer show each other's branch. New (untracked) files now count as changes for the `*`.
 - **Effort level:** shows the reasoning effort next to the model name.
 - **Token count:** shows tokens used out of the window size (`120k/1M`).
 - **Folder colour:** the folder name uses a lighter blue that's easier to read on dark backgrounds.

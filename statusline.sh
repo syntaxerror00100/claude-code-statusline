@@ -302,6 +302,9 @@ fi
 
 # One cache file per folder, so Claude Code windows open in different repos
 # don't show each other's branch. Lines: written-at epoch, folder, branch, dirty.
+# Kept under the user's home: in a shared /tmp another user could create the
+# file first (a symlink to overwrite, or fake content to print).
+GIT_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
 GIT_CACHE_MAX_AGE=5
 now_epoch=${EPOCHSECONDS:-$(date +%s)}
 
@@ -309,7 +312,7 @@ git_branch="${branch:-}"
 dirty=""
 
 if [[ -n "${cwd_full:-}" && -d "${cwd_full:-}" ]]; then
-  git_cache="/tmp/claude-statusline-git-${cwd_full//[^A-Za-z0-9._-]/_}"
+  git_cache="$GIT_CACHE_DIR/git-${cwd_full//[^A-Za-z0-9._-]/_}"
   cache_ts="" cache_dir="" cached_br="" cached_dt=""
   if [[ -f "$git_cache" ]]; then
     { IFS= read -r cache_ts; IFS= read -r cache_dir; IFS= read -r cached_br; IFS= read -r cached_dt; } < "$git_cache" || true
@@ -331,6 +334,7 @@ if [[ -n "${cwd_full:-}" && -d "${cwd_full:-}" ]]; then
       done <<< "$git_out"
       if [[ "$head" == "(detached)" ]]; then cached_br=${oid:0:7}; else cached_br=$head; fi
     fi
+    [[ -d "$GIT_CACHE_DIR" ]] || mkdir -p "$GIT_CACHE_DIR" 2>/dev/null || true
     printf '%s\n%s\n%s\n%s\n' "$now_epoch" "$cwd_full" "$cached_br" "$cached_dt" 2>/dev/null > "$git_cache" || true
   fi
 
